@@ -1,0 +1,9 @@
+flask
+transformers
+torch
+torchvision
+gunicorn
+bitsandbytes
+accelerate
+sentencepiece
+protobuf

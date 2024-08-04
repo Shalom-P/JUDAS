@@ -1,0 +1,13 @@
+services:
+  llm:
+    restart: always
+    volumes:
+      # - /var/run/docker.sock:/var/run/docker.sock
+      # - /usr/bin/docker:/usr/bin/docker
+      # - /tmp/.X11-unix/:/tmp/.X11-unix
+      - /path_to_your_local_dir/model_cache:/root/.cache/huggingface
+      - /path_to_your_local_dir/pip_cache:/root/.cache/pip
+    build: 
+      context: .
+      dockerfile: Dockerfile
+    network_mode: "host"
