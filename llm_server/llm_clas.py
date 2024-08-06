@@ -24,7 +24,6 @@ class LLM:
         )
         self.tokenizer = AutoTokenizer.from_pretrained(model_name, use_fast=True)
         self.model.eval()
-        
     def run_llm(self, prompt: str,stop_words:list,temperature:float) -> str:
         self.model.eval()
         with torch.no_grad():

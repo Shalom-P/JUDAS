@@ -1,6 +1,6 @@
 FROM nvidia/cuda:12.2.2-runtime-ubuntu22.04
 WORKDIR /llm_server
-ENV HF_TOKEN=your token
+ENV HF_TOKEN=your_hugging_face_token
 ENV PORT_NUMBER=6969
 RUN apt update && apt install python3.10 -y 
 RUN apt install python3-pip -y
