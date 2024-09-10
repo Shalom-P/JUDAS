@@ -1,13 +1,23 @@
 services:
   llm:
-    restart: always
+    # restart: always
     volumes:
       # - /var/run/docker.sock:/var/run/docker.sock
       # - /usr/bin/docker:/usr/bin/docker
       # - /tmp/.X11-unix/:/tmp/.X11-unix
-      - path/to/model_cache:/root/.cache/huggingface
-      - path/to/pip_cache:/root/.cache/pip
+      - ../../model_cache:/root/.cache/huggingface
+      - ../../pip_cache:/root/.cache/pip
     build: 
       context: .
       dockerfile: Dockerfile
     network_mode: "host"
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+    #we will add tty and interactive
+    tty: true
+    stdin_open: true

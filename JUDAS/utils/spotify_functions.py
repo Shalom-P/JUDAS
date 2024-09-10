@@ -3,31 +3,28 @@ from spotipy.oauth2 import SpotifyOAuth
 import spotipy
 import time
 import os
+import ast
 # Replace these with your actual client ID, client secret, and redirect URI
-client_id = ''
-client_secret = ''
-redirect_uri = ''
+client_id = 'c634e902f72240f880f10bf5be40e204'
+client_secret = '971f5a2476b448d5911176765dadb331'
+redirect_uri = 'http://localhost:5000/callback'
 time_limit = 2
 current_playback_device=None
 
 def process_spotify(model_command:str):
     print(model_command)
-    if "@cntrl" in model_command:
-        control_command = model_command.split("@")[1]
-        playback_control(control_command)
-    elif "@playing" in model_command:
-        split = model_command.split("@")[1]
-        type_of_input = split.split("type:")[1].split(" name:")[0]
-        input = split.split("name:")[1]
-        try:
-            input = input.split('"')[1]
-        except:
-            pass
-        print(input,flush=True)
-        play_something(type=type_of_input,name=input)
+    dict_command = ast.literal_eval(model_command.split("<|eot_id|>")[0].split("<|eom_id|>")[0])
+    print(dict_command)
+    if "playback_control" == dict_command["name"]:
+        playback_control(dict_command["parameters"]["control_command"])
+    elif "play_something" == dict_command["name"]:
+        play_something(dict_command["parameters"]["to_play"],dict_command["parameters"]["type"])
+    else:
+        print("unknown command",flush=True)
+    
         
 def playback_control(control_command:str):
-    print(control_command,flush=True)
+    # print(control_command,flush=True)
     global current_playback_device
     scope = (
     "user-library-read user-library-modify "
@@ -177,7 +174,7 @@ def get_recommendations(limit,seed_genres):
     sp.start_playback(device_id=list_of_devices['devices'][0]['id'],uris=[f'spotify:track:{x}' for x in recomended_track_ids],position_ms=0)
     return list_of_tracks
 
-def play_something(name:str,type:str):
+def play_something(to_play:str,type:str):
     
     try:
         # scope = 'app-remote-control streaming user-read-playback-state user-modify-playback-state'
@@ -192,7 +189,7 @@ def play_something(name:str,type:str):
                                                     client_secret=client_secret,
                                                     redirect_uri=redirect_uri,
                                                     scope=scope))
-        results = sp.search(q=f"{type}:{name}", type=type)
+        results = sp.search(q=f"{type}:{to_play}", type=type)
         song_list = list()
         if "albums" in results.keys():
             album_id = results['albums']['items'][0]["id"]

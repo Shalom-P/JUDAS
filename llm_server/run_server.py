@@ -3,7 +3,7 @@ from llm_clas import LLM
 import gc
 
 app = Flask(__name__)
-llm = LLM()
+llm = LLM(modname="meta-llama/Meta-Llama-3.1-8B-Instruct")
 
 @app.route('/process_text', methods=['POST'])
 def process_text():
