@@ -4,17 +4,20 @@ import spotipy
 import time
 import os
 import ast
+from dotenv import load_dotenv
+load_dotenv(dotenv_path="../../sample.env")
 # Replace these with your actual client ID, client secret, and redirect URI
-client_id = 'c634e902f72240f880f10bf5be40e204'
-client_secret = '971f5a2476b448d5911176765dadb331'
-redirect_uri = 'http://localhost:5000/callback'
+# client_id = 'c634e902f72240f880f10bf5be40e204'
+# client_secret = '971f5a2476b448d5911176765dadb331'
+# redirect_uri = 'http://localhost:5000/callback'
+client_id = os.getenv("SPOTIPY_CLIENT_ID")
+client_secret = os.getenv("SPOTIPY_CLIENT_SECRET")
+redirect_uri = os.getenv("SPOTIPY_REDIRECT_URI")
 time_limit = 2
 current_playback_device=None
 
 def process_spotify(model_command:str):
-    print(model_command)
-    dict_command = ast.literal_eval(model_command.split("<|eot_id|>")[0].split("<|eom_id|>")[0])
-    print(dict_command)
+    dict_command = ast.literal_eval(model_command)#.split("<|eot_id|>")[0].split("<|eom_id|>")[0])
     if "playback_control" == dict_command["name"]:
         playback_control(dict_command["parameters"]["control_command"])
     elif "play_something" == dict_command["name"]:
@@ -176,37 +179,39 @@ def get_recommendations(limit,seed_genres):
 
 def play_something(to_play:str,type:str):
     
-    try:
-        # scope = 'app-remote-control streaming user-read-playback-state user-modify-playback-state'
-        scope = (
-        "user-library-read user-library-modify "
-        "playlist-read-private playlist-read-collaborative playlist-modify-public playlist-modify-private "
-        "user-read-private user-read-email user-top-read user-follow-read user-follow-modify "
-        "streaming app-remote-control user-read-playback-state user-read-currently-playing user-modify-playback-state"
-        )
+    # try:
+    # scope = 'app-remote-control streaming user-read-playback-state user-modify-playback-state'
+    scope = (
+    "user-library-read user-library-modify "
+    "playlist-read-private playlist-read-collaborative playlist-modify-public playlist-modify-private "
+    "user-read-private user-read-email user-top-read user-follow-read user-follow-modify "
+    "streaming app-remote-control user-read-playback-state user-read-currently-playing user-modify-playback-state"
+    )
 
-        sp = spotipy.Spotify(auth_manager=SpotifyOAuth(client_id=client_id,
-                                                    client_secret=client_secret,
-                                                    redirect_uri=redirect_uri,
-                                                    scope=scope))
-        results = sp.search(q=f"{type}:{to_play}", type=type)
-        song_list = list()
-        if "albums" in results.keys():
-            album_id = results['albums']['items'][0]["id"]
-            results = sp.album(album_id)
-        if "artists" in results.keys():
-            artists_id = results['artists']['items'][0]['id']
-            results = sp.artist_top_tracks(artists_id)
-            for idx, track in enumerate(results['tracks']):
-                    song_list.append(track['id'])
-        else:
-            for idx, track in enumerate(results['tracks']['items']):
-                    song_list.append(track['id'])
-        
-        list_of_devices = sp.devices()
-        device_id = list_of_devices['devices'][0]['id']
-        
-        sp.start_playback(device_id=device_id,uris=[f'spotify:track:{x}' for x in song_list],position_ms=0)
-    except Exception as e:
-        print(e,"not happend")
+    sp = spotipy.Spotify(auth_manager=SpotifyOAuth(client_id=client_id,
+                                                client_secret=client_secret,
+                                                redirect_uri=redirect_uri,
+                                                scope=scope))
+    results = sp.search(q=f"{type}:{to_play}", type=type)
+    song_list = list()
+    if "albums" in results.keys():
+        album_id = results['albums']['items'][0]["id"]
+        results = sp.album(album_id)
+        for idx, track in enumerate(results['tracks']['items']):
+            song_list.append(track['id'])
+    elif "artists" in results.keys():
+        artists_id = results['artists']['items'][0]['id']
+        results = sp.artist_top_tracks(artists_id)
+        for idx, track in enumerate(results['tracks']):
+            song_list.append(track['id'])
+    else:
+        for idx, track in enumerate(results['tracks']['items']):
+            song_list.append(track['id'])
+    
+    list_of_devices = sp.devices()
+    device_id = list_of_devices['devices'][0]['id']
+    
+    sp.start_playback(device_id=device_id,uris=[f'spotify:track:{x}' for x in song_list],position_ms=0)
+    # except Exception as e:
+    #     print(e,"not happend")
 

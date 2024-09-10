@@ -49,7 +49,6 @@ class LLM:
             answer = self.tokenizer.decode(answer_cpu[0][len(model_inputs[0]):], skip_special_tokens=True)
             del model_inputs
             torch.cuda.empty_cache()
-            # answer = answer.split("[/INST]")[1].split("[JUDAS]:")[-1].strip()
             del answer_cpu
             torch.cuda.empty_cache()
             gc.collect()

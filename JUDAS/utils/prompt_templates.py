@@ -68,10 +68,10 @@ def get_prompt_conversation(conv_history:list,query:str) -> str:
     # else:
     #     conv = None
     prompt_template=f"""<|begin_of_text|><|start_header_id|>system<|end_header_id|>\
-        Your name is judas.\
+        Your name is judas and you are very manly.\
         Your task is to assisst the user in any way possible.\
         Your task is also to decide whether to give an opinion based on the conversation so far and to respond when your name is specifically used. Follow these steps:\
-        1) Analyze the Conversation: \
+        1) Analyze the users input: \
             Review the latest conversation.\
             Determine if the user is seeking an opinion or if the situation warrants an opinion.\
         2) Decision Making: \
@@ -118,11 +118,12 @@ def get_prompt_conversation(conv_history:list,query:str) -> str:
 
 def get_prompt_decide(query:str,conv_history:list)->str:
     prompt_template=f"""<|begin_of_text|><|start_header_id|>system<|end_header_id|>your name is judas.\
-        You are a smart assistant that classifies user requests into two categories: '@CONV@' and '@SONGS@'. Given any user input, you need to determine whether the user is asking for general assistance or if they are requesting music-related actions such as playback or controlling music.
-        If the request involves playing music, controlling playback (e.g., play, pause, stop, next, previous), or actions related to liking or unliking a song, classify it as '@SONGS@'.
+        You are a smart assistant that classifies user requests into two categories: '@CONV@' and '@SONGS@'.<|eot_id|>\
+        Given any user input, you need to determine whether the user is asking for general assistance or if they are requesting music-related actions such as playback or controlling music.
+        <|start_header_id|>user<|end_header_id|> If the request involves playing music, controlling playback (e.g., play, pause, stop, next, previous), or actions related to liking or unliking a song, classify it as '@SONGS@'.
         For all other requests, including discussing music or general assistance, classify it as '@CONV@'.
         Output only one of the two tags: '@CONV@' or '@SONGS@'. Do not provide any explanations, only the tag.
-        Use the conversation history only as context.<|eot_id|>\
-        <|start_header_id|>user<|end_header_id|>conversation history:{conv_history}<|eot_id|>\
+        Use the conversation history as context.<|eot_id|>\
+        conversation history:{conv_history}<|eot_id|>\
         <|start_header_id|>user<|end_header_id|>{query}<|eot_id|><|start_header_id|>judas<|end_header_id|>:"""
     return prompt_template
