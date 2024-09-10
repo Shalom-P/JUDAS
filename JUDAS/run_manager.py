@@ -42,7 +42,7 @@ def run(query):
     try:
         # query = input("Input: ")
         prompt = get_prompt_decide(query,conv_history=conversation_history)
-        model_says_decide = hit_llm(prompt,stop_words,0.1)
+        model_says_decide = hit_llm(prompt,stop_words,0.9)
         # model_says_decide = model_says_decide.split("judas<|end_header_id|>")[-1]
         if "@CONV@" in model_says_decide:
             decide_tag = "@CONV@"
@@ -60,7 +60,7 @@ def run(query):
             decide_tag = "@SONGS@"
             print("it is songs")
             prompt = get_prompt_for_spotify(conversation_history,query)
-            model_says = hit_llm(prompt,stop_words,0.1)
+            model_says = hit_llm(prompt,stop_words,0.9)
             # model_says = model_says.split("judas<|end_header_id|>:")[-1]
             # print(model_says,"thjis is model sysy")
             start_index = model_says.find('{')
