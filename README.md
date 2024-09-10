@@ -1,4 +1,3 @@
-Here’s a sample README file for your GitHub project:
 
 ---
 
@@ -17,7 +16,7 @@ This project demonstrates an AI-powered assistant that understands your music pr
 
 ## Installation
 
-To run the SPOTIFY, follow these steps:
+To run the JUDAS, follow these steps:
 
 ### Prerequisites
 
