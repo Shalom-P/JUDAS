@@ -27,42 +27,18 @@ def hit_llm(query:str,stop_words:list,temperature:float)->str:
 
 #############################################################################################
 def run(query):
-    # while True:
     print(conversation_history)
     if len(conversation_history)>max_len_conv:
         conversation_history.pop(0)
-    # if len(decider_conversation)>max_len_conv:
-    #     decider_conversation.pop(0)
-    # if len(conversation_conversation)>max_len_conv:
-    #     conversation_conversation.pop(0)
-    # if len(spotify_conversation)>max_len_conv:
-    #     spotify_conversation.pop(0)
-    # if len(script_conversation)>max_len_conv:
-    #     script_conversation.pop(0)
     try:
         # query = input("Input: ")
         prompt = get_prompt_decide(query,conv_history=conversation_history)
-        model_says_decide = hit_llm(prompt,stop_words,0.9)
-        # model_says_decide = model_says_decide.split("judas<|end_header_id|>")[-1]
-        if "@CONV@" in model_says_decide:
-            decide_tag = "@CONV@"
+        model_says_decide = hit_llm(prompt,stop_words,0.3)
+        if "@NOT_CONTROL_SONGS@" in model_says_decide:
+            decide_tag = "@NOT_CONTROL_SONGS@"
             print("it is conv")
             prompt = get_prompt_conversation(conversation_history,query)
             model_says = hit_llm(prompt,stop_words,0.6)
-            # model_says = model_says.split("judas<|end_header_id|>:")[-1]
-            # print(model_says)
-            conversation_history.append(
-                f"<|start_header_id|>user<|end_header_id|>{query}<|eot_id|>\
-                    <|start_header_id|>judas<|end_header_id|>{model_says}<|eot_id|>"
-            )
-            # del model_says
-        elif "@SONGS@" in model_says_decide:
-            decide_tag = "@SONGS@"
-            print("it is songs")
-            prompt = get_prompt_for_spotify(conversation_history,query)
-            model_says = hit_llm(prompt,stop_words,0.9)
-            # model_says = model_says.split("judas<|end_header_id|>:")[-1]
-            # print(model_says,"thjis is model sysy")
             start_index = model_says.find('{')
             end_index = model_says.rfind('}')
             
@@ -72,7 +48,31 @@ def run(query):
             
             # Extract the string between the braces
             model_says = model_says[start_index:end_index + 1].strip()
-            model_says = model_says.replace("\n","")
+            model_says = model_says.replace('\n',"")
+            model_says = model_says.replace('\\',"")
+            # dict_command = ast.literal_eval(model_says)
+            # print(dict_command)
+            conversation_history.append(
+                f"<|start_header_id|>user<|end_header_id|>{query}<|eot_id|><|start_header_id|>judas<|end_header_id|>{str(model_says)}<|eot_id|>"
+            )
+            # del model_says
+        elif "@CONTROL_SONGS@" in model_says_decide:
+            decide_tag = "@CONTROL_SONGS@"
+            print("it is songs")
+            prompt = get_prompt_for_spotify(conversation_history,query)
+            model_says = hit_llm(prompt,stop_words,0.2)
+            start_index = model_says.find('{')
+            end_index = model_says.rfind('}')
+            
+            # Ensure that the braces were found
+            if start_index == -1 or end_index == -1:
+                raise ValueError("Input string does not contain a valid dictionary.")
+            
+            # Extract the string between the braces
+            model_says = model_says[start_index:end_index + 1].strip()
+            model_says = model_says.replace('\n',"")
+            model_says = model_says.replace('\\',"")
+            print(model_says)
             # model_says = model_says.replace(")","").replace("(","")
             process_spotify(model_says)
             # print(model_says)
@@ -100,24 +100,14 @@ def run(query):
             print(model_says_decide,"not proper categorisation")
             decide_tag = "@NOTPRESENT@"
             model_says = "model be tripping bruh".upper()
-            # print(model_says_decide)
-            # print(model_says)
-        # print(conversation_history)
-        # conversation_history.append(
-        #         f"<|start_header_id|>user<|end_header_id|>{query}<|eot_id|>\
-        #             <|start_header_id|>judas<|end_header_id|>{model_says_decide}<|eot_id|>"
-        #     )
-        # del model_says_decide
-        # del query
-        # del prompt
-        # gc.collect()
+            
         return decide_tag+"\n"+model_says,[f"user: {query}\njudas: {model_says}"]
     except KeyboardInterrupt:
         # break
         pass
 if __name__=='__main__':
     max_len_conv = 4
-    stop_words = ["[/OPINION]","[NO_OPINION]","[/ANSWER]","@CONV@","@SONGS@","@SCRIPT@","[/SCRIPT]","[/ANS]","@end"]
+    stop_words = ["[/OPINION]","[NO_OPINION]","[/ANSWER]","@NOT_CONTROL_SONGS@","@CONTROL_SONGS@","@SCRIPT@","[/SCRIPT]","[/ANS]","@end"]
     # decider_conversation = []
     # spotify_conversation = []
     # script_conversation = []
@@ -125,11 +115,11 @@ if __name__=='__main__':
     conversation_history = []
 
     def append_item(new_item):
-        text_widget.insert(tk.END, new_item + "\n")
+        text_widget.insert(tk.END, new_item + '\n')
 
     def print_history(history_list):
         for item in history_list:
-            text_widget.insert(tk.END, item + "\n")
+            text_widget.insert(tk.END, item + '\n')
 
     # Function to append a new item to the list
         

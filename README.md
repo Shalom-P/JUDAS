@@ -5,7 +5,7 @@
 
 ## Overview
 
-This project demonstrates an AI-powered assistant that understands your music preferences and suggests songs based on your requests or conversation. It integrates with Spotify to seamlessly suggest and play tracks using natural language commands.
+This project demonstrates an AI-powered assistant that leverages its huge knowledge base of songs, its meaning and music and understanding of conversation to suggest the best suited tracks based on your request. It integrates with Spotify to seamlessly play tracks that is suggests to the user.
 
 ## Features
 
@@ -76,7 +76,8 @@ To run the JUDAS, follow these steps:
   ```
   "Suggest some songs that I may like based on the conversation so far."
   ```
-
+- **Example**:
+   ![Alt text](readme_files/example.png)
 ## Spotify Authentication
 
 The assistant uses Spotipy's `SpotifyOAuth` for authentication. The OAuth process is handled automatically without the need for manual token entry. Refer to the `.env` setup for supplying necessary credentials.

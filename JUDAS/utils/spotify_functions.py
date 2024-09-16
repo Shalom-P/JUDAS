@@ -6,10 +6,6 @@ import os
 import ast
 from dotenv import load_dotenv
 load_dotenv(dotenv_path="../../sample.env")
-# Replace these with your actual client ID, client secret, and redirect URI
-# client_id = 'c634e902f72240f880f10bf5be40e204'
-# client_secret = '971f5a2476b448d5911176765dadb331'
-# redirect_uri = 'http://localhost:5000/callback'
 client_id = os.getenv("SPOTIPY_CLIENT_ID")
 client_secret = os.getenv("SPOTIPY_CLIENT_SECRET")
 redirect_uri = os.getenv("SPOTIPY_REDIRECT_URI")

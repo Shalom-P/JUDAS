@@ -3,7 +3,8 @@ from llm_clas import LLM
 import gc
 
 app = Flask(__name__)
-llm = LLM(modname="meta-llama/Meta-Llama-3.1-8B-Instruct")
+stop_words = ["[/OPINION]","[NO_OPINION]","[/ANSWER]","@NOT_CONTROL_SONGS@","@CONTROL_SONGS@","@SCRIPT@","[/SCRIPT]","[/ANS]","@end"]
+llm = LLM(stop_words=stop_words,modname="meta-llama/Meta-Llama-3.1-8B-Instruct")
 
 @app.route('/process_text', methods=['POST'])
 def process_text():
