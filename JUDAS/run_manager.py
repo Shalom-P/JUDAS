@@ -30,15 +30,22 @@ def run(query):
     print(conversation_history)
     if len(conversation_history)>max_len_conv:
         conversation_history.pop(0)
+    if len(decider_conversation)>max_len_conv:
+        decider_conversation.pop(0)
+
     try:
         # query = input("Input: ")
-        prompt = get_prompt_decide(query,conv_history=conversation_history)
+        prompt = get_prompt_decide(query,conv_history=decider_conversation)
         model_says_decide = hit_llm(prompt,stop_words,0.3)
         if "@NOT_CONTROL_SONGS@" in model_says_decide:
             decide_tag = "@NOT_CONTROL_SONGS@"
+            decider_conversation.append(
+                f"<|start_header_id|>user<|end_header_id|>{query}<|eot_id|><|start_header_id|>judas<|end_header_id|>{str(decide_tag)}<|eot_id|>"
+            )
             print("it is conv")
             prompt = get_prompt_conversation(conversation_history,query)
             model_says = hit_llm(prompt,stop_words,0.6)
+            print(model_says)
             start_index = model_says.find('{')
             end_index = model_says.rfind('}')
             
@@ -58,6 +65,9 @@ def run(query):
             # del model_says
         elif "@CONTROL_SONGS@" in model_says_decide:
             decide_tag = "@CONTROL_SONGS@"
+            decider_conversation.append(
+                f"<|start_header_id|>user<|end_header_id|>{query}<|eot_id|><|start_header_id|>judas<|end_header_id|>{str(decide_tag)}<|eot_id|>"
+            )
             print("it is songs")
             prompt = get_prompt_for_spotify(conversation_history,query)
             model_says = hit_llm(prompt,stop_words,0.2)
@@ -108,7 +118,7 @@ def run(query):
 if __name__=='__main__':
     max_len_conv = 4
     stop_words = ["[/OPINION]","[NO_OPINION]","[/ANSWER]","@NOT_CONTROL_SONGS@","@CONTROL_SONGS@","@SCRIPT@","[/SCRIPT]","[/ANS]","@end"]
-    # decider_conversation = []
+    decider_conversation = []
     # spotify_conversation = []
     # script_conversation = []
     # conversation_conversation = []

@@ -87,8 +87,8 @@ def get_prompt_decide(query:str,conv_history:list)->str:
         Given any user input, you need to determine whether the user is asking for general assistance or if they are requesting music-related actions such as playback or controlling music.
         if the request involves playing music, controlling playback (e.g., play, pause, stop, next, previous), or actions related to liking or unliking a song, classify it as '@CONTROL_SONGS@'.
         For all other requests, including discussing music, lyrics, songs, artists, albums or general assistance, classify it as '@NOT_CONTROL_SONGS@'.
-        Output only one of the two tags: '@NOT_CONTROL_SONGS@' or '@CONTROL_SONGS@'. Do not provide any explanations, only the tag.
+        Respond with only one of the two tags: '@NOT_CONTROL_SONGS@' or '@CONTROL_SONGS@'. Do not provide any explanations, only the tag.
         Use the conversation history as context.
         conversation history:{conv_history}<|eot_id|>
-        <|start_header_id|>user<|end_header_id|>{query}<|eot_id|><|start_header_id|>judas<|end_header_id|>:'''
+        <|start_header_id|>user<|end_header_id|>{query}<|eot_id|><|start_header_id|>judas<|end_header_id|>'''
     return prompt_template
