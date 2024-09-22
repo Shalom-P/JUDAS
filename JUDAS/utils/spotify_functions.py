@@ -5,7 +5,7 @@ import time
 import os
 import ast
 from dotenv import load_dotenv
-load_dotenv(dotenv_path="../../sample.env")
+load_dotenv(dotenv_path="../sample.env")
 client_id = os.getenv("SPOTIPY_CLIENT_ID")
 client_secret = os.getenv("SPOTIPY_CLIENT_SECRET")
 redirect_uri = os.getenv("SPOTIPY_REDIRECT_URI")
@@ -13,15 +13,19 @@ time_limit = 2
 current_playback_device=None
 
 def process_spotify(model_command:str):
-    dict_command = ast.literal_eval(model_command)#.split("<|eot_id|>")[0].split("<|eom_id|>")[0])
+    try:
+        dict_command = ast.literal_eval(model_command)#.split("<|eot_id|>")[0].split("<|eom_id|>")[0])
+    except:
+        dict_command = ast.literal_eval(model_command+'}')
     if "playback_control" == dict_command["name"]:
         playback_control(dict_command["parameters"]["control_command"])
+        return f"""{dict_command["parameters"]["control_command"]}ed the song"""
     elif "play_something" == dict_command["name"]:
         play_something(dict_command["parameters"]["to_play"],dict_command["parameters"]["type"])
+        return f"""played the {dict_command["parameters"]["type"]} {dict_command["parameters"]["to_play"]}"""
     else:
         print("unknown command",flush=True)
     
-        
 def playback_control(control_command:str):
     # print(control_command,flush=True)
     global current_playback_device
